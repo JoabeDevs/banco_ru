@@ -1,0 +1,3 @@
+RewriteEngine On
+
+RewriteRule ^saldo$ index.php [L]
