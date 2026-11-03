@@ -1,26 +1,30 @@
-CREATE DATABASE ru_teste;
+CREATE DATABASE IF NOT EXISTS ru_teste
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE ru_teste.alunos (
-    matricula INT PRIMARY KEY,
+USE ru_teste;
+
+CREATE TABLE alunos (
+    matricula VARCHAR(11) PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     foto VARCHAR(255),
     foto_atualizada_em DATETIME
 );
 
-CREATE TABLE ru_teste.saldos (
-    matricula INT PRIMARY KEY,
+CREATE TABLE saldos (
+    matricula VARCHAR(11) PRIMARY KEY,
     saldo DECIMAL(10,2) NOT NULL,
     atualizado_em DATETIME NOT NULL,
 
     FOREIGN KEY (matricula)
-        REFERENCES ru_teste.alunos(matricula)
+        REFERENCES alunos(matricula)
 );
 
-CREATE TABLE ru_teste.qrcodes (
-    matricula INT PRIMARY KEY,
+CREATE TABLE qrcodes (
+    matricula VARCHAR(11) PRIMARY KEY,
     codigo VARCHAR(255) NOT NULL,
     gerado_em DATETIME NOT NULL,
 
     FOREIGN KEY (matricula)
-        REFERENCES ru_teste.alunos(matricula)
+        REFERENCES alunos(matricula)
 );
