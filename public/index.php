@@ -1,8 +1,5 @@
 <?php
 
-echo $_SERVER['REQUEST_METHOD'];
-exit;
-
 header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, X-API-Key');
@@ -111,8 +108,9 @@ if (
 
 // Se chegou aqui, a validação passou
 // Busca os dados do aluno no banco
+
 $sql = "
-    SELECT 
+    SELECT
         alunos.matricula,
         alunos.nome,
         alunos.foto,
@@ -122,9 +120,9 @@ $sql = "
         qrcodes.codigo,
         qrcodes.gerado_em
     FROM alunos
-    INNER JOIN saldos
+    LEFT JOIN saldos
         ON alunos.matricula = saldos.matricula
-    INNER JOIN qrcodes
+    LEFT JOIN qrcodes
         ON alunos.matricula = qrcodes.matricula
     WHERE alunos.matricula = :matricula
 ";
@@ -139,6 +137,8 @@ try {
     $aluno = $stmt->fetch(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
+    error_log("Erro na consulta /saldo: " . $e->getMessage());
+
     http_response_code(500);
 
     echo json_encode([
@@ -161,37 +161,21 @@ if (!$aluno) {
 // Verifica se a foto foi atualizada depois da data informada
 $foto = null;
 
-if ($aluno['foto_atualizada_em'] > str_replace('T', ' ', $data)) {
-
-    if (empty($aluno['foto'])) {
-        http_response_code(400);
-
-        echo json_encode([
-            'erro' => "Campo 'foto' é obrigatório"
-        ]);
-
-        exit;
-    }
-
-    $foto = $aluno['foto'];
+if (
+    !empty($aluno['foto_atualizada_em']) &&
+    $aluno['foto_atualizada_em'] >= str_replace('T', ' ', $data)
+) {
+    $foto = !empty($aluno['foto']) ? $aluno['foto'] : null;
 }
 
 // Verifica se o QR Code foi gerado depois da data informada
 $qrCode = null;
 
-if ($aluno['gerado_em'] > str_replace('T', ' ', $data)) {
-
-    if (empty($aluno['codigo'])) {
-        http_response_code(400);
-
-        echo json_encode([
-            'erro' => "Campo 'strQrCode' é obrigatório"
-        ]);
-
-        exit;
-    }
-
-    $qrCode = $aluno['codigo'];
+if (
+    !empty($aluno['gerado_em']) &&
+    $aluno['gerado_em'] >= str_replace('T', ' ', $data)
+) {
+    $qrCode = !empty($aluno['codigo']) ? $aluno['codigo'] : null;
 }
 
 echo json_encode([
