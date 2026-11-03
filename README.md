@@ -1,174 +1,125 @@
-\# API RU — Consulta de Saldo
-
-
+API RU — Consulta de Saldo
 
 API desenvolvida em PHP para consulta de informações de alunos, saldo do RU, QR Code e foto do aluno.
 
+Tecnologias utilizadas
 
+PHP 8.2+
 
-\## Tecnologias utilizadas
+MySQL
 
+PDO
 
+XAMPP
 
-\* PHP 8.2+
+Postman
 
-\* MySQL
+Git/GitHub
 
-\* PDO
+Estrutura do projeto
 
-\* XAMPP
-
-\* Postman
-
-\* Git/GitHub
-
-
-
-\## Estrutura do projeto
-
-
-
-```text
-
-banco\_ru/
-
+banco_ru/
 ├── public/
-
 │   └── index.php
-
 ├── .env
-
 ├── .env.example
-
 ├── .gitignore
-
 ├── config.php
-
 ├── schema.sql
-
 ├── seed.sql
-
 └── README.md
 
-```
+Configuração do banco de dados
 
+Abra o XAMPP Control Panel e inicie o MySQL.
 
+Acesse o phpMyAdmin.
 
-\## Configuração do banco de dados
+Crie o banco de dados utilizando o arquivo schema.sql.
 
+Execute o arquivo seed.sql para inserir os dados de teste.
 
+Configuração do ambiente
 
-1\. Abra o XAMPP e inicie o MySQL.
+Crie um arquivo .env na raiz do projeto com as configurações do banco de dados.
 
-2\. Acesse o phpMyAdmin.
-
-3\. Crie o banco de dados utilizando o arquivo `schema.sql`.
-
-4\. Execute o arquivo `seed.sql` para inserir os dados de teste.
-
-
-
-\## Configuração do ambiente
-
-
-
-Crie um arquivo `.env` na raiz do projeto com as configurações do banco de dados.
-
-
-
-Utilize o arquivo `.env.example` como modelo.
-
-
+Utilize o arquivo .env.example como modelo.
 
 Exemplo:
 
+DB_HOST=localhost
+DB_USER=seu_usuario
+DB_PASS=sua_senha
+DB_NAME=ru_teste
+API_KEY=sua_chave
 
+Importante: o arquivo .env contém informações sensíveis e não deve ser enviado para o GitHub.
 
-```env
+Executando a API
 
-DB\_HOST=localhost
+Abra o XAMPP Control Panel.
 
-DB\_USER=seu\_usuario
+Inicie o Apache e o MySQL.
 
-DB\_PASS=sua\_senha
+Verifique se a pasta banco_ru está dentro de C:\xampp\htdocs.
 
-DB\_NAME=ru\_teste
+Acesse a API pelo endereço:
 
-API\_KEY=sua\_chave
+http://localhost/banco_ru/public/index.php
 
-```
+A API utiliza o Apache do XAMPP para receber as requisições HTTP.
 
+Endpoint
 
-
-\*\*Importante:\*\* o arquivo `.env` contém informações sensíveis e não deve ser enviado para o GitHub.
-
-
-
-\## Executando a API
-
-
-
-Abra o PowerShell na pasta do projeto:
-
-
-
-```powershell
-
-cd banco\_ru
-
-```
-
-
-
-Execute o servidor PHP:
-
-
-
-```powershell
-
-php -S localhost:8000 -t public
-
-```
-
-
-
-A API ficará disponível em:
-
-
-
-```text
-
-http://localhost:8000
-
-```
-
-
-
-\## Endpoint
-
-
-
-\### POST `/saldo`
-
-
+POST /saldo
 
 Endpoint utilizado para consultar os dados do aluno.
 
+O endereço e a rota final devem corresponder à configuração utilizada pela API no Apache.
 
+Cabeçalhos
 
-Exemplo:
+Content-Type: application/json
 
+X-API-Key: sua_chave
 
+A chave deve ser a mesma configurada no arquivo .env.
 
-```text
+Corpo da requisição
 
-POST http://localhost:8000/saldo
+Exemplo em JSON:
 
-```
+{
+  "matricula": "20251200022",
+  "data": "2026-09-22T00:00:00"
+}
 
+A matrícula deve possuir exatamente 11 dígitos. O campo data deve seguir o formato AAAA-MM-DDTHH:MM:SS.
 
+Resposta
 
-A req
+A resposta pode conter a matrícula, o nome do aluno, o saldo, a data de atualização do saldo, o QR Code e a foto.
 
+Os campos de foto e QR Code podem retornar null quando não estiverem disponíveis, conforme a regra implementada na API.
 
+Códigos HTTP
 
+200: consulta realizada com sucesso.
+
+400: requisição inválida ou dados em formato incorreto.
+
+401: chave de API inválida.
+
+404: matrícula não encontrada.
+
+405: método HTTP não permitido.
+
+500: erro interno do servidor.
+
+Segurança
+
+A chave de API é configurada por meio do arquivo .env.
+
+O arquivo .env não deve ser enviado ao GitHub.
+
+As consultas ao banco utilizam PDO e instruções preparadas para reduzir o risco de SQL Injection.
